@@ -4,7 +4,9 @@
 <p><span data-preserver-spaces="true">IntelOwl is what I was looking for as an Intel analyst to check indicators across multiple sources at the same quickly.</span></p>
 <p><span data-preserver-spaces="true">Intelowl can be configured to reach out to VirusTotal, Hybrid Analysis etc. and return a JSON file as a result. Intelowl effectively provides an API to rule them all. All this "plugin" parser does, is to parse the JSON file colourfully returned by Intelowl, which is easier to read.&nbsp;</span></p>
 <p>&nbsp;</p>
+
 ## Installation
+
 <ol>
 <li><span data-preserver-spaces="true">Install IntelOwl (Got to the official repository <a href="https://github.com/intelowlproject/IntelOwl">here</a> and follow the instructions. The instructions are very simple, you just need to clone the repo, have docker and docker-compose installed, set up the environment files as requested in the docs and execute docker-compose run.)</span></li>
 <li><span data-preserver-spaces="true">Generate your api and paste it in file "api_token.txt"</span></li>
@@ -13,7 +15,9 @@
 <li>Use it on a terminal that supports different colour outputs</li>
 </ol>
 <p>&nbsp;</p>
+
 ### Command line Client
+
 <p>Instructions on how to run the script has been taken from the original PyIntelOwl repo (<a href="https://github.com/intelowlproject/pyintelowl">https://github.com/intelowlproject/pyintelowl</a>)</p>
 <h4><a id="user-content-help" class="anchor" href="https://github.com/intelowlproject/pyintelowl#help" aria-hidden="true"></a>Help</h4>
 <p><code>python3 intel_owl_client.py -h</code></p>
@@ -28,7 +32,9 @@
 <p>Example:</p>
 <p><code>python3 intel_owl_client.py -k &lt;api_token_file&gt; -i &lt;url&gt; -a AbuseIPDB -a OTXQuery observable -v google.com</code></p>
 <p>&nbsp;</p>
+
 ## Current parser capabilities
+
 <p><span data-preserver-spaces="true">Currently, I am only parsing the results returned for the services below for the equivalent observables.</span></p>
 <p>&nbsp;</p>
 <p><span style="text-decoration: underline;">Domains</span></p>
