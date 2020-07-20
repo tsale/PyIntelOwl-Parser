@@ -15,13 +15,13 @@
 <li>Use it on a terminal that supports different colour outputs</li>
 </ol>
 
-### Command line Client
+## Command line Client
 
 <p>Instructions on how to run the script have been taken from the original PyIntelOwl repo&nbsp;(<a href="https://github.com/intelowlproject/pyintelowl">https://github.com/intelowlproject/pyintelowl</a>) with the exception of one added argument: "-j / --show-json"</p>
 <p>&nbsp;</p>
 <h4><a id="user-content-help" class="anchor" href="https://github.com/intelowlproject/pyintelowl#help" aria-hidden="true"></a>Help</h4>
 <p><code>python3 intel_owl_client.py -h</code></p>
-<p><code> "-k", "--api-token-file", default=DEFAULT_TOKEN_FILE, help=f"File containing IntelOwl's API token. Default: '{DEFAULT_TOKEN_FILE}'"</p>
+<p><code> "-k", "--api-token-file", default=DEFAULT_TOKEN_FILE, help=f"File containing IntelOwl's API token. Default: '{DEFAULT_TOKEN_FILE}'"</code></p>
 <p><code>"-c", "--certificate", path to Intel Owl certificate</code></p>
 <p><code> "-i", "--instance", your instance URL (required)</code></p>
 <p><code> "-d", "--debug", debug mode</code></p>
