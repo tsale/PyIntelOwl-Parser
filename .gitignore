@@ -1,0 +1,9 @@
+.idea
+build
+dist
+pyintelowl.egg-info
+venv/
+test_files/
+*.exe
+__pycache__
+.vscode

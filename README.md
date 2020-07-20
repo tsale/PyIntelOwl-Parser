@@ -63,8 +63,16 @@
 <p>&nbsp;</p>
 <p><span data-preserver-spaces="true">If you like the idea but not the execution, feel free to improve the parser and drop me a note with the changes. Personally, it does the job, and it's useful for my intended use.</span></p>
 <p>&nbsp;</p>
-<p><strong>Running Examples:</strong></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+
+## Running Examples:
+
+![Example 1](https://github.com/tsale/PyIntelOwl-Parser/blob/master/Images/InteOwl_parser-1.PNG)
+
+![Example 2](https://github.com/tsale/PyIntelOwl-Parser/blob/master/Images/InteOwl_parser-2.PNG)
+
+![Example 3](https://github.com/tsale/PyIntelOwl-Parser/blob/master/Images/InteOwl_parser-3.PNG)
+
+![Example 4](https://github.com/tsale/PyIntelOwl-Parser/blob/master/Images/InteOwl_parser-4.PNG)
+
+![Example 5](https://github.com/tsale/PyIntelOwl-Parser/blob/master/Images/InteOwl_parser-5.PNG)
+
