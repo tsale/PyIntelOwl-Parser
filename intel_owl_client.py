@@ -5,6 +5,7 @@ import os
 import requests
 import time
 from domain_checkers import *
+import sys
 
 from pprint import pprint
 
@@ -46,6 +47,8 @@ def intel_owl_client():
                         help="check reported analysis too, not only 'running' ones")
     parser.add_argument("-s", "--skip-check-analysis-availability", action="store_true", default=False,
                         help="skip check analysis availability")
+    parser.add_argument("-j", "--show-json", action="store_true", default=False,
+                        help="Show JSON raw results")    
 
     subparsers = parser.add_subparsers(help='choose type of analysis', dest='command')
     parser_sample = subparsers.add_parser('file', help='File analysis')
@@ -223,10 +226,13 @@ def _pyintelowl_logic(args, logger):
         exit(-1)
     except Exception as e:
         logger.exception(e)
-
+    
     logger.info("elapsed time: {}".format(elapsed_time))
     logger.info("results:")
-    #pprint(results)
+    if args.show_json:
+        pprint(results)
+        sys.exit()
+    
     observable = get_observable_classification(args.value)
     if 'domain' in observable:
         Checkers.check_domain(results,args.value)
