@@ -24,18 +24,17 @@
 <p><code> "-k", "--api-token-file", default=DEFAULT_TOKEN_FILE, help=f"File containing IntelOwl's API token. Default: '{DEFAULT_TOKEN_FILE}'"</p>
 <p><code>"-c", "--certificate", path to Intel Owl certificate</code></p>
 <p><code> "-i", "--instance", your instance URL (required)</code></p>
-<p><code> "-d", "--debug",&nbsp; debug mode</code></p>
-<p><code></code></p>
+<p><code> "-d", "--debug", debug mode</code></p>
 <p><code> "-l", "--log-to-file", log to specified file</code></p>
 <p><code> "-gc", "--get-configuration", get analyzers configuration only</code></p>
-<p><code> "-a", "--analyzers-list",&nbsp; list of analyzers to launch</code></p>
+<p><code> "-a", "--analyzers-list", list of analyzers to launch</code></p>
 <p><code> "-aa", "--run-all-available-analyzers", run all available and compatible analyzers</code></p>
 <p><code> "-p", "--force-privacy", disable analyzers that could impact privacy</code></p>
 <p><code> "-e", "--disable-external-analyzers", disable analyzers that use external services</code></p>
 <p><code> "-r", "--check-reported-analysis-too", check reported analysis too, not only 'running' ones</code></p>
 <p><code>"-s", "--skip-check-analysis-availability", skip check analysis availability</code></p>
 <p><code>"-j", "--show-json", Show JSON raw results</code></p>
-<p><code>"-f", "--file",&nbsp; file to analyze</code></p>
+<p><code>"-f", "--file", file to analyze</code></p>
 <p><code> "-v", "--value", observable to analyze</code></p>
 
 <h4><a id="user-content-analyze" class="anchor" href="https://github.com/intelowlproject/pyintelowl#analyze" aria-hidden="true"></a>Analyze</h4>
