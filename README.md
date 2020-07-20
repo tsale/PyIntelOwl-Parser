@@ -10,7 +10,7 @@
 <ol>
 <li><span data-preserver-spaces="true">Install IntelOwl (Got to the official repository <a href="https://github.com/intelowlproject/IntelOwl">here</a> and follow the instructions. The instructions are very simple, you just need to clone the repo, have docker and docker-compose installed, set up the environment files as requested in the docs and execute docker-compose run.)</span></li>
 <li><span data-preserver-spaces="true">Generate your api and paste it in file "api_token.txt"</span></li>
-<li><span data-preserver-spaces="true">Git clone XXX</span></li>
+<li><span data-preserver-spaces="true">Git clone https://github.com/tsale/PyIntelOwl-Parser.git</span></li>
 <li><span data-preserver-spaces="true">pip install colorama <span id="pip-command">geocoder</span></span></li>
 <li>Use it on a terminal that supports different colour outputs</li>
 </ol>
