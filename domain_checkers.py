@@ -791,27 +791,21 @@ class Hashes():
         self.value = value
         
     def vthash(self): 
-        
         try:
             self.text = self.text["data"]
             timestamp = self.text['attributes']['first_submission_date']
             dt_object = datetime.fromtimestamp(timestamp)        
-        except KeyError:
-            print(mycolors.foreground.lightred + "\nERROR: Try using VirusTotal_v3_Get_Observable instead!\n")
-        
-        
-            
 
             print(mycolors.foreground.yellow + "\nScan date: ".ljust(13), dt_object)
             print(mycolors.reset)
-            
-            
+                
+                
             print(mycolors.foreground.lightblue + mycolors.background.lightgrey)            
             #print(mycolors.foreground.lightblue)
             print("\nVIRUSTOTAL SUMMARY")
             print("="*20,'n') 
             print(mycolors.reset)
-
+    
             if self.text['attributes']['tags']:
                 print("Tags:")
                 try:
@@ -820,7 +814,7 @@ class Hashes():
                         print(mycolors.foreground.orange, self.text['attributes']['tags'][i],mycolors.reset)
                 except KeyError as e:
                     pass
-
+    
             if self.text['attributes']['names']:
                 print("-"*40)                            
                 print("Name(s) of file:")                
@@ -830,8 +824,8 @@ class Hashes():
                         print(mycolors.foreground.orange, self.text['attributes']['names'][i],mycolors.reset)
                 except KeyError as e:
                     pass
-            
-                    
+                
+                        
             print("-"*40)  
             print("\n\n\n")
             print(f"Detection {mycolors.foreground.lightred}{self.text['attributes']['last_analysis_stats']['malicious']}{mycolors.reset}/{mycolors.foreground.lightgreen}60")
@@ -872,8 +866,8 @@ class Hashes():
             else:
                 print("".ljust(28), end=' ')
                 print(mycolors.reset,"NONE")
-                
-                
+                    
+                    
         except ValueError:
             print(mycolors.foreground.lightred + "Error while connecting to Virus Total!\n")
             print(mycolors.reset)
@@ -1025,4 +1019,3 @@ class Hashes():
         except (KeyError,TypeError):
             print(mycolors.foreground.lightred + "\nNo results found for OTX_Query")    
             print(mycolors.reset) 
-       
