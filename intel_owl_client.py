@@ -4,9 +4,8 @@ import logging
 import os
 import requests
 import time
-from domain_checkers import *
+from domain_checkers import Checkers
 import sys
-
 from pprint import pprint
 
 from pyintelowl.pyintelowl import (
@@ -233,13 +232,15 @@ def _pyintelowl_logic(args, logger):
         pprint(results)
         sys.exit()
     
+    checkers = Checkers(results, args.value)
+    
     observable = get_observable_classification(args.value)
     if 'domain' in observable:
-        Checkers.check_domain(results,args.value)
+        checkers.check_domain()
     elif 'hash' in observable:
-        Checkers.check_hash(results)
+        checkers.check_hash()
     else:
-        Checkers.check_ip(results,args.value)
+        checkers.check_ip()
 
 
 

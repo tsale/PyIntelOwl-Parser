@@ -6,7 +6,7 @@ import os
 
 
 
-class mycolors:
+class mycolors():
 
     reset='\033[0m'
     reverse='\033[07m'
@@ -36,35 +36,43 @@ class mycolors:
         orange='\033[43m'
         red='\033[41m'
 
-class Checkers:
-    def check_domain(results,value):
+class Checkers():
+    def __init__(self, results, value):
+        self.results = results
+        self.value = value
+    
+    def check_domain(self):
         vt = {}
         ha = {}
         otx = {}
-        for i in results:
-            if 'HybridAnalysis_Get_Observable' in i['name']:
-                ha.update(i)   
-            elif 'VirusTotal_v2_Get_Observable' in i['name']:
-                vt.update(i)               
-            elif "OTXQuery" in i['name']:
-                otx.update(i)
+        if bool(self.results):
+            for i in self.results:
+                if 'HybridAnalysis_Get_Observable' in i['name']:
+                    ha.update(i)   
+                elif 'VirusTotal_v2_Get_Observable' in i['name']:
+                    vt.update(i)               
+                elif "OTXQuery" in i['name']:
+                    otx.update(i)
               
         if vt:
             try:
                 if "VirusTotal_v2" in vt['name']:
-                    Domains.vtDomaincheck(vt['report'],value)
+                    domains = Domains(vt['report'],self.value)                    
+                    domains.vtDomaincheck()
             except KeyError:
                 print(mycolors.foreground.lightred + "\nERROR: Try using VirusTotal_v2_Get_Observable instead!\n")
         if ha:
-            Domains.haDomaincheck(ha['report'])
+            domains = Domains(ha['report'],self.value)
+            domains.haDomaincheck()
         if otx:
-            Domains.otxDomaincheck(otx['report'])
+            domains = Domains(otx['report'], self.value)
+            domains.otxDomaincheck()
             
-    def check_hash(results):
+    def check_hash(self):
         vt = {}
         ha = {}
         otx = {}
-        for i in results:
+        for i in self.results:
             if 'HybridAnalysis_Get_Observable' in i['name']:
                 ha.update(i)   
             elif 'VirusTotal_v3_Get_Observable' in i['name']:
@@ -74,22 +82,25 @@ class Checkers:
                 
         if vt:
             if "VirusTotal_v3" in vt['name']:
-                Hashes.vthash(vt['report'])
+                hashes = Hashes(vt['report'],self.value)
+                hashes.vthash()
             else:
                 print(mycolors.foreground.lightred + "\nERROR: Try using VirusTotal_v3_Get_Observable instead!\n")
         if ha:
-            Hashes.hahash(ha['report'])
+            hashes = Hashes(ha['report'],self.value)            
+            hashes.hahash()
         if otx:
-            Hashes.otxhash(otx['report'])
+            hashes = Hashes(otx['report'],self.value)                        
+            hashes.otxhash()
             
-    def check_ip(results,value):
+    def check_ip(self):
         vt = {}
         ha = {}
         otx = {}
         abusedb = {}
         censys = {}
         greynoise = {}
-        for i in results:
+        for i in self.results:
             if 'HybridAnalysis_Get_Observable' in i['name']:
                 ha.update(i)   
             elif 'VirusTotal_v2_Get_Observable' in i['name']:
@@ -105,26 +116,36 @@ class Checkers:
         
         
         if abusedb:
-            IPs.abIPdbcheck(abusedb['report']['data'])
+            ips = IPs(abusedb['report']['data'], self.value)
+            ips.abIPdbcheck()
         if censys:
-            IPs.censysIPcheck(censys['report'])
+            ips = IPs(censys['report'], self.value)            
+            ips.censysIPcheck()
         if greynoise:
-            IPs.gnoiseIPcheck(greynoise['report'])
+            ips = IPs(greynoise['report'], self.value)                        
+            ips.gnoiseIPcheck()
         if vt:
             try:
                 if "VirusTotal_v2" in vt['name']:
-                    IPs.vtIPcheck(vt['report'],value)
+                    ips = IPs(vt['report'], self.value)                                            
+                    ips.vtIPcheck()
             except KeyError:
                 print(mycolors.foreground.lightred + "\nERROR: Try using VirusTotal_v2_Get_Observable instead!\n")
             
         if ha:
-            IPs.haIPcheck(ha['report'])
+            ips = IPs(ha['report'], self.value)                                                        
+            ips.haIPcheck()
         if otx:
-            IPs.otxIPcheck(otx['report'])    
+            ips = IPs(otx['report'], self.value)                                                    
+            ips.otxIPcheck()    
 
                
-class Domains:
-    def vtDomaincheck(vttext,value):
+class Domains():
+    def __init__(self, text, value):
+        self.text = text
+        self.value = value    
+        
+    def vtDomaincheck(self):
         try:
             print(mycolors.reset)
             print("\n\tDOMAIN SUMMARY REPORT")
@@ -137,23 +158,23 @@ class Domains:
             print(mycolors.reset)            
 
     
-            if 'undetected_referrer_samples' in vttext:
+            if 'undetected_referrer_samples' in self.text:
                 print(mycolors.foreground.lightcyan + "Undetected Referrer Samples: ".ljust(17))
-                if (bool(vttext['undetected_referrer_samples'])):
+                if (bool(self.text['undetected_referrer_samples'])):
                     try:
-                        for i in range(0, len(vttext['undetected_referrer_samples'])):
-                            if (vttext['undetected_referrer_samples'][i].get('date')):
+                        for i in range(0, len(self.text['undetected_referrer_samples'])):
+                            if (self.text['undetected_referrer_samples'][i].get('date')):
                                 print("".ljust(28), end=' ')
-                                print(f"Date: {vttext['undetected_referrer_samples'][i]['date']}")
-                            if (vttext['undetected_referrer_samples'][i].get('positives')):
+                                print(f"Date: {self.text['undetected_referrer_samples'][i]['date']}")
+                            if (self.text['undetected_referrer_samples'][i].get('positives')):
                                 print("".ljust(28), end=' ')
-                                print(f"Positives: {vttext['undetected_referrer_samples'][i]['positives']}")
-                            if (vttext['undetected_referrer_samples'][i].get('total')):
+                                print(f"Positives: {self.text['undetected_referrer_samples'][i]['positives']}")
+                            if (self.text['undetected_referrer_samples'][i].get('total')):
                                 print("".ljust(28), end=' ')
-                                print(f"Total: {vttext['undetected_referrer_samples'][i]['total']}")
-                            if (vttext['undetected_referrer_samples'][i].get('sha256')):
+                                print(f"Total: {self.text['undetected_referrer_samples'][i]['total']}")
+                            if (self.text['undetected_referrer_samples'][i].get('sha256')):
                                 print("".ljust(28), end=' ')
-                                print((f"SHA256: {vttext['undetected_referrer_samples'][i]['sha256']}"), end=' ')
+                                print((f"SHA256: {self.text['undetected_referrer_samples'][i]['sha256']}"), end=' ')
                             print("\n")
                     except KeyError as e:
                         pass
@@ -162,24 +183,24 @@ class Domains:
     
 
     
-            if 'detected_referrer_samples' in vttext:
+            if 'detected_referrer_samples' in self.text:
                 print("-"*20)
                 print(mycolors.foreground.pink + "Detected Referrer Samples: ".ljust(17))                
-                if (bool(vttext['detected_referrer_samples'])):
+                if (bool(self.text['detected_referrer_samples'])):
                     try:
-                        for i in range(len(vttext['detected_referrer_samples'])):
-                            if (vttext['detected_referrer_samples'][i].get('date')):
+                        for i in range(len(self.text['detected_referrer_samples'])):
+                            if (self.text['detected_referrer_samples'][i].get('date')):
                                 print("".ljust(28), end=' ')
-                                print(f"Date: {vttext['detected_referrer_samples'][i]['date']}")
-                            if (vttext['detected_referrer_samples'][i].get('positives')):
+                                print(f"Date: {self.text['detected_referrer_samples'][i]['date']}")
+                            if (self.text['detected_referrer_samples'][i].get('positives')):
                                 print("".ljust(28), end=' ')
-                                print(f"Positives: {vttext['detected_referrer_samples'][i]['positives']}")
-                            if (vttext['detected_referrer_samples'][i].get('total')):
+                                print(f"Positives: {self.text['detected_referrer_samples'][i]['positives']}")
+                            if (self.text['detected_referrer_samples'][i].get('total')):
                                 print("".ljust(28), end=' ')
-                                print(f"Total: {vttext['detected_referrer_samples'][i]['total']}")
-                            if (vttext['detected_referrer_samples'][i].get('sha256')):
+                                print(f"Total: {self.text['detected_referrer_samples'][i]['total']}")
+                            if (self.text['detected_referrer_samples'][i].get('sha256')):
                                 print("".ljust(28), end=' ')
-                                print((f"SHA256: {vttext['detected_referrer_samples'][i]['sha256']}"), end=' ')
+                                print((f"SHA256: {self.text['detected_referrer_samples'][i]['sha256']}"), end=' ')
                             print("\n")
                     except KeyError as e:
                         pass
@@ -188,11 +209,11 @@ class Domains:
             print("-"*20)
             print(mycolors.foreground.yellow + "\nWhois Timestamp: ".ljust(17))
     
-            if 'whois_timestamp' in vttext:
-                if (bool(vttext['whois_timestamp'])):
+            if 'whois_timestamp' in self.text:
+                if (bool(self.text['whois_timestamp'])):
                     try:
                         print("".ljust(28), end=' ') 
-                        ts = vttext['whois_timestamp']
+                        ts = self.text['whois_timestamp']
                         print((datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:{}')))
                     except KeyError as e:
                         pass
@@ -200,48 +221,48 @@ class Domains:
     
 
     
-            if 'undetected_downloaded_samples' in vttext:
+            if 'undetected_downloaded_samples' in self.text:
                 print("-"*20)
                 print(mycolors.foreground.lightgreen + "\nUndetected Downld. Samples: ".ljust(17))                
-                if (bool(vttext['undetected_downloaded_samples'])):
+                if (bool(self.text['undetected_downloaded_samples'])):
                     try:
-                        for i in range(len(vttext['undetected_downloaded_samples'])):
-                            if (vttext['undetected_downloaded_samples'][i].get('date')):
+                        for i in range(len(self.text['undetected_downloaded_samples'])):
+                            if (self.text['undetected_downloaded_samples'][i].get('date')):
                                 print("".ljust(28), end=' ')
-                                print(f"Date: {vttext['undetected_downloaded_samples'][i]['date']}")
-                            if (vttext['undetected_downloaded_samples'][i].get('positives')):
+                                print(f"Date: {self.text['undetected_downloaded_samples'][i]['date']}")
+                            if (self.text['undetected_downloaded_samples'][i].get('positives')):
                                 print("".ljust(28), end=' ')
-                                print(f"Positives: {vttext['undetected_downloaded_samples'][i]['positives']}")
-                            if (vttext['undetected_downloaded_samples'][i].get('total')):
+                                print(f"Positives: {self.text['undetected_downloaded_samples'][i]['positives']}")
+                            if (self.text['undetected_downloaded_samples'][i].get('total')):
                                 print("".ljust(28), end=' ')
-                                print(f"Total: {vttext['undetected_downloaded_samples'][i]['total']}")
-                            if (vttext['undetected_downloaded_samples'][i].get('sha256')):
+                                print(f"Total: {self.text['undetected_downloaded_samples'][i]['total']}")
+                            if (self.text['undetected_downloaded_samples'][i].get('sha256')):
                                 print("".ljust(28), end=' ')
-                                print((f"SHA256: {vttext['detected_referrer_samples'][i]['sha256']}"), end=' ')
+                                print((f"SHA256: {self.text['detected_referrer_samples'][i]['sha256']}"), end=' ')
                             print("\n")
                     except KeyError as e:
                         pass
     
             
     
-            if 'detected_downloaded_samples' in vttext:
+            if 'detected_downloaded_samples' in self.text:
                 print("-"*20)
                 print(mycolors.foreground.orange + "\nDetected Downloaded Samples: ".ljust(17))                
-                if (bool(vttext['detected_downloaded_samples'])):
+                if (bool(self.text['detected_downloaded_samples'])):
                     try:
-                        for i in range(len(vttext['detected_downloaded_samples'])):
-                            if (vttext['detected_downloaded_samples'][i].get('date')):
+                        for i in range(len(self.text['detected_downloaded_samples'])):
+                            if (self.text['detected_downloaded_samples'][i].get('date')):
                                 print("".ljust(28), end=' ')
-                                print(f"Date: {vttext['detected_downloaded_samples'][i]['date']}")
-                            if (vttext['detected_downloaded_samples'][i].get('positives')):
+                                print(f"Date: {self.text['detected_downloaded_samples'][i]['date']}")
+                            if (self.text['detected_downloaded_samples'][i].get('positives')):
                                 print("".ljust(28), end=' ')
-                                print(f"Positives: {vttext['detected_downloaded_samples'][i]['positives']}")
-                            if (vttext['detected_downloaded_samples'][i].get('total')):
+                                print(f"Positives: {self.text['detected_downloaded_samples'][i]['positives']}")
+                            if (self.text['detected_downloaded_samples'][i].get('total')):
                                 print("".ljust(28), end=' ')
-                                print(f"total: {vttext['detected_downloaded_samples'][i]['total']}")
-                            if (vttext['detected_downloaded_samples'][i].get('sha256')):
+                                print(f"total: {self.text['detected_downloaded_samples'][i]['total']}")
+                            if (self.text['detected_downloaded_samples'][i].get('sha256')):
                                 print("".ljust(28), end=' ')
-                                print(f"sha256: {vttext['detected_downloaded_samples'][i]['sha256']}", end=' ')
+                                print(f"sha256: {self.text['detected_downloaded_samples'][i]['sha256']}", end=' ')
                             print("\n")
                     except KeyError as e:
                         pass
@@ -249,84 +270,84 @@ class Domains:
             
             
                               
-            if 'detected_communicating_samples' in vttext:
+            if 'detected_communicating_samples' in self.text:
                 print("-"*20)                
                 print(mycolors.foreground.lightcyan + "\nDetected Communicating Samples: \n".ljust(17))  
-                if (bool(vttext['detected_communicating_samples'])):
+                if (bool(self.text['detected_communicating_samples'])):
                     try:
-                        for i in range(0, len(vttext['detected_communicating_samples'])):
-                            if (vttext['detected_communicating_samples'][i].get('date')):
+                        for i in range(0, len(self.text['detected_communicating_samples'])):
+                            if (self.text['detected_communicating_samples'][i].get('date')):
                                 print("".ljust(28), end=' ')
-                                print(f"Date: {vttext['detected_communicating_samples'][i]['date']}")
-                            if (vttext['detected_communicating_samples'][i].get('positives')):
+                                print(f"Date: {self.text['detected_communicating_samples'][i]['date']}")
+                            if (self.text['detected_communicating_samples'][i].get('positives')):
                                 print("".ljust(28), end=' ')
-                                print(f"Positives: {vttext['detected_communicating_samples'][i]['positives']}")
-                            if (vttext['detected_communicating_samples'][i].get('total')):
+                                print(f"Positives: {self.text['detected_communicating_samples'][i]['positives']}")
+                            if (self.text['detected_communicating_samples'][i].get('total')):
                                 print("".ljust(28), end=' ')
-                                print(f"Total: {vttext['detected_communicating_samples'][i]['total']}")
-                            if (vttext['detected_communicating_samples'][i].get('sha256')):
+                                print(f"Total: {self.text['detected_communicating_samples'][i]['total']}")
+                            if (self.text['detected_communicating_samples'][i].get('sha256')):
                                 print("".ljust(28), end=' ')
-                                print((f"SHA256: {vttext['detected_communicating_samples'][i]['sha256']}"), end=' ')
+                                print((f"SHA256: {self.text['detected_communicating_samples'][i]['sha256']}"), end=' ')
                             print("\n")
                     except KeyError as e:
                         pass            
     
             
     
-            if 'resolutions' in vttext:
+            if 'resolutions' in self.text:
                 print("-"*20)
                 print(mycolors.foreground.lightred + "Resolutions: ".ljust(17))                
-                if (bool(vttext['resolutions'])):
+                if (bool(self.text['resolutions'])):
                     try:
-                        for i in range(len(vttext['resolutions'])):
-                            if (vttext['resolutions'][i].get('last_resolved')):
+                        for i in range(len(self.text['resolutions'])):
+                            if (self.text['resolutions'][i].get('last_resolved')):
                                 print("".ljust(28), end=' ')
-                                print(f"Last resolved: {vttext['resolutions'][i]['last_resolved']}")
-                            if (vttext['resolutions'][i].get('ip_address')):
+                                print(f"Last resolved: {self.text['resolutions'][i]['last_resolved']}")
+                            if (self.text['resolutions'][i].get('ip_address')):
                                 print("".ljust(28), end=' ')
-                                print("IP address:   {}".format(vttext['resolutions'][i]['ip_address']), end=' ')
-                                print("\t" + f"(City:{geocoder.ip(vttext['resolutions'][i]['ip_address']).city})")
+                                print("IP address:   {}".format(self.text['resolutions'][i]['ip_address']), end=' ')
+                                print("\t" + f"(City:{geocoder.ip(self.text['resolutions'][i]['ip_address']).city})")
                             print("\n")
                     except KeyError as e:
                         pass
     
 
     
-            if 'subdomains' in vttext:
+            if 'subdomains' in self.text:
                 print("-"*20)
                 print(mycolors.foreground.lightgreen + "\nSubdomains: ".ljust(17))                
-                if (bool(vttext['subdomains'])):
+                if (bool(self.text['subdomains'])):
                     try:
-                        for i in range(len(vttext['subdomains'])):
+                        for i in range(len(self.text['subdomains'])):
                             print("".ljust(28), end=' ') 
-                            print((vttext['subdomains'][i]))
+                            print((self.text['subdomains'][i]))
                     except KeyError as e:
                         pass
     
             
     
-            if 'categories' in vttext:
+            if 'categories' in self.text:
                 print("-"*20)                
                 print(mycolors.foreground.lightcyan + "\nCategories: ".ljust(17))                
-                if (bool(vttext['categories'])):
+                if (bool(self.text['categories'])):
                     try:
-                        for i in range(len(vttext['categories'])):
+                        for i in range(len(self.text['categories'])):
                             print("".ljust(28), end=' ')
-                            print((vttext['categories'][i]))
+                            print((self.text['categories'][i]))
                     except KeyError as e:
                         pass
     
     
 
     
-            if 'domain_sublings' in vttext:
+            if 'domain_sublings' in self.text:
                 print("-"*20)
                 print(mycolors.foreground.lightcyan + "\nDomain Siblings: ".ljust(17))                
-                if (bool(vttext['domain_sublings'])):
+                if (bool(self.text['domain_sublings'])):
                     try:
-                        for i in range(len(vttext['domain_siblings'])):
+                        for i in range(len(self.text['domain_siblings'])):
                             print("".ljust(28), end=' ')
-                            print((vttext['domain_siblings'][i]), end=' ')
+                            print((self.text['domain_siblings'][i]), end=' ')
                         print("\n")
                     except KeyError as e:
                         pass
@@ -334,39 +355,39 @@ class Domains:
             
 
     
-            if 'detected_urls' in vttext:
+            if 'detected_urls' in self.text:
                 print("-"*20)
                 print(mycolors.foreground.yellow + "\nDetected URLs: ".ljust(17))                
-                if (bool(vttext['detected_urls'])):
+                if (bool(self.text['detected_urls'])):
                     try:
-                        for i in range(len(vttext['detected_urls'])):
-                            if (vttext['detected_urls'][i].get('url')):
+                        for i in range(len(self.text['detected_urls'])):
+                            if (self.text['detected_urls'][i].get('url')):
                                 print("".ljust(28), end=' ')
-                                print(("url: {}".format( vttext['detected_urls'][i]['url'])))
-                            if (vttext['detected_urls'][i].get('positives')):
+                                print(("url: {}".format( self.text['detected_urls'][i]['url'])))
+                            if (self.text['detected_urls'][i].get('positives')):
                                 print("".ljust(28), end=' ')
-                                print(("{}Positives: {}{}".format(mycolors.reset,mycolors.foreground.lightred,vttext['detected_urls'][i]['positives'])+mycolors.foreground.yellow))
-                            if (vttext['detected_urls'][i].get('total')):
+                                print(("{}Positives: {}{}".format(mycolors.reset,mycolors.foreground.lightred,self.text['detected_urls'][i]['positives'])+mycolors.foreground.yellow))
+                            if (self.text['detected_urls'][i].get('total')):
                                 print("".ljust(28), end=' ')
-                                print(("{}Total: {}{}".format(mycolors.reset,mycolors.foreground.lightgreen,vttext['detected_urls'][i]['total'])+mycolors.foreground.yellow))
-                            if (vttext['detected_urls'][i].get('scan_date')):
+                                print(("{}Total: {}{}".format(mycolors.reset,mycolors.foreground.lightgreen,self.text['detected_urls'][i]['total'])+mycolors.foreground.yellow))
+                            if (self.text['detected_urls'][i].get('scan_date')):
                                 print("".ljust(28), end=' ')
-                                print("scan_date: {}".format( vttext['detected_urls'][i]['scan_date']), end=' ')
+                                print("scan_date: {}".format( self.text['detected_urls'][i]['scan_date']), end=' ')
                             print("\n")
                     except KeyError as e:
                         pass
     
 
     
-            if 'undetected_urls' in vttext:
+            if 'undetected_urls' in self.text:
                 print("-"*20)
                 print(mycolors.foreground.lightred + "\nUndetected URLs: ".ljust(17))                
-                if (bool(vttext['undetected_urls'])):
+                if (bool(self.text['undetected_urls'])):
                     try:
-                        for i in range(len(vttext['undetected_urls'])):
+                        for i in range(len(self.text['undetected_urls'])):
                             print((mycolors.foreground.red + "".ljust(28)), end=' ')
                             print(("Data {}\n".format( i)))
-                            for y in range(len(vttext['undetected_urls'][i])):
+                            for y in range(len(self.text['undetected_urls'][i])):
                                 print((mycolors.foreground.lightgreen + "".ljust(28)), end=' ')
                                 if (y == 0):
                                     print(("url:       "), end=' ')
@@ -378,7 +399,7 @@ class Domains:
                                     print(("total:     "), end=' ')
                                 if (y == 4):
                                     print(("date:      "), end=' ')
-                                print(vttext['undetected_urls'][i][y])
+                                print(self.text['undetected_urls'][i][y])
                         print("\n")
                     except KeyError as e:
                         pass
@@ -388,30 +409,30 @@ class Domains:
             print(mycolors.reset)
             
     
-    def haDomaincheck(hatext):
+    def haDomaincheck(self):
         try:
             print(mycolors.foreground.lightred,mycolors.background.lightgrey)
             print("\nHYBRIDANALYSIS SUMMARY")
             print("-"*20) 
             print(mycolors.reset)     
             
-            print(mycolors.foreground.orange + "\nResults found: {}".format((hatext["count"])))
+            print(mycolors.foreground.orange + "\nResults found: {}".format((self.text["count"])))
             print("-"*28)
             print(mycolors.reset)
             try:
-                for i in range(len(hatext['result'])): 
-                    if hatext['result'][i]['verdict'] != None:
-                        print(mycolors.foreground.orange, "Verdict    => " + hatext['result'][i]['verdict'])
+                for i in range(len(self.text['result'])): 
+                    if self.text['result'][i]['verdict'] != None:
+                        print(mycolors.foreground.orange, "Verdict    => " + self.text['result'][i]['verdict'])
                     
-                    print(mycolors.foreground.orange, "SHA256     => " + hatext['result'][i]['sha256'])
-                    if hatext['result'][i]['av_detect'] != None:
-                        print(mycolors.foreground.orange, "AV Detect  => " + hatext['result'][i]['av_detect'])
-                    if hatext['result'][i]['vx_family'] != None:
-                        print(mycolors.foreground.orange, "Mal Family => " + hatext['result'][i]['vx_family'])
-                    if hatext['result'][i]['submit_name'] != None:
-                        print(mycolors.foreground.orange, "FileName   => " + hatext['result'][i]['submit_name'])
-                    if hatext['result'][i]['type_short'] != None:
-                        print(mycolors.foreground.orange, "FileType   => " + hatext['result'][i]['type_short'] + "\n")
+                    print(mycolors.foreground.orange, "SHA256     => " + self.text['result'][i]['sha256'])
+                    if self.text['result'][i]['av_detect'] != None:
+                        print(mycolors.foreground.orange, "AV Detect  => " + self.text['result'][i]['av_detect'])
+                    if self.text['result'][i]['vx_family'] != None:
+                        print(mycolors.foreground.orange, "Mal Family => " + self.text['result'][i]['vx_family'])
+                    if self.text['result'][i]['submit_name'] != None:
+                        print(mycolors.foreground.orange, "FileName   => " + self.text['result'][i]['submit_name'])
+                    if self.text['result'][i]['type_short'] != None:
+                        print(mycolors.foreground.orange, "FileType   => " + self.text['result'][i]['type_short'] + "\n")
             except KeyError as e:
                 pass     
             
@@ -427,7 +448,7 @@ class Domains:
        
             
     
-    def otxDomaincheck(otxtext):
+    def otxDomaincheck(self):
         try:
             print(mycolors.foreground.lightblue + mycolors.background.cyan)
             print("\nOTXQuery SUMMARY")
@@ -435,26 +456,26 @@ class Domains:
             print(mycolors.reset)            
             
             # Get General Info
-            if (bool(otxtext['pulses'])):
+            if (bool(self.text['pulses'])):
                 try:
                     print("-"*40)
                     num = 0
-                    for i in range(0, len(otxtext['pulses'])):
-                        if (otxtext['pulses'][i].get('name')):
+                    for i in range(0, len(self.text['pulses'])):
+                        if (self.text['pulses'][i].get('name')):
                             num +=1
                             print("".ljust(28), end=' ')
                             print(f"Data {mycolors.foreground.orange}{num}")
                             print("".ljust(28), end=' ')                            
-                            print(("Name: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['name'],mycolors.reset)))
-                        if (otxtext['pulses'][i].get('tags')):
+                            print(("Name: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['name'],mycolors.reset)))
+                        if (self.text['pulses'][i].get('tags')):
                             print("".ljust(28), end=' ')
-                            print((mycolors.foreground.orange + "Tags: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['tags'],mycolors.reset)))
-                        if (otxtext['pulses'][i].get('targeted_countries')):
+                            print((mycolors.foreground.orange + "Tags: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['tags'],mycolors.reset)))
+                        if (self.text['pulses'][i].get('targeted_countries')):
                             print("".ljust(28), end=' ')
-                            print((mycolors.foreground.orange + "Targeted Countries: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['targeted_countries'],mycolors.reset)))                                
-                        if (otxtext['pulses'][i].get('references')):
+                            print((mycolors.foreground.orange + "Targeted Countries: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['targeted_countries'],mycolors.reset)))                                
+                        if (self.text['pulses'][i].get('references')):
                             print("".ljust(28), end=' ')
-                            print(mycolors.foreground.orange + "References: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['references'],mycolors.reset), end=' ')
+                            print(mycolors.foreground.orange + "References: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['references'],mycolors.reset), end=' ')
                         print("\n")
                 except KeyError as e:
                     pass     
@@ -463,13 +484,13 @@ class Domains:
                 print("-"*20)
                 # Get OTX domain detected malware samples
                 print(mycolors.foreground.lightred + "\nDetected malware samples: ".ljust(17))                
-                if 'malware_samples' in otxtext:
-                    if (bool(otxtext['malware_samples'])):
+                if 'malware_samples' in self.text:
+                    if (bool(self.text['malware_samples'])):
                         try:
-                            for i in range(0, len(otxtext['malware_samples'])):
-                                if (otxtext['malware_samples'][i]):
+                            for i in range(0, len(self.text['malware_samples'])):
+                                if (self.text['malware_samples'][i]):
                                     print("".ljust(28), end=' ')
-                                    print(otxtext['malware_samples'][i])                    
+                                    print(self.text['malware_samples'][i])                    
                         except KeyError as e:
                             pass     
                     else:
@@ -480,13 +501,13 @@ class Domains:
                 print("-"*20)
                 # Get OTX domain detected URLs
                 print(mycolors.foreground.lightcyan + "\nDetected URLs: ".ljust(17))  
-                if 'url_list' in otxtext:
-                    if (bool(otxtext['url_list'])):
+                if 'url_list' in self.text:
+                    if (bool(self.text['url_list'])):
                         try:
-                            for i in range(0, len(otxtext['url_list'])):
-                                if (otxtext['url_list'][i]).get('url'):
+                            for i in range(0, len(self.text['url_list'])):
+                                if (self.text['url_list'][i]).get('url'):
                                     print("".ljust(28), end=' ')
-                                    print(otxtext['url_list'][i]['url'])                    
+                                    print(self.text['url_list'][i]['url'])                    
                         except KeyError as e:
                             pass    
                     else:
@@ -502,29 +523,33 @@ class Domains:
               
         
 
-class IPs:
-    def abIPdbcheck(abusetext):
+class IPs():
+    def __init__(self, text, value):
+        self.text = text
+        self.value = value
+        
+    def abIPdbcheck(self):
         print(mycolors.foreground.lightgreen,mycolors.background.lightgrey)
         print("\nABUSEIPDB SUMMARY")
         print("-"*25,"\n") 
         print(mycolors.reset) 
         
         print(mycolors.foreground.lightcyan)    
-        if  abusetext['isp'] != None:
+        if  self.text['isp'] != None:
             print("".ljust(28), end=' ')            
-            print("ISP: {}".format((abusetext['isp'])))
-        if abusetext['domain'] != None:
+            print("ISP: {}".format((self.text['isp'])))
+        if self.text['domain'] != None:
             print("".ljust(28), end=' ')                        
-            print("Domain: =>\t{}".format((abusetext['domain'])))
-        if abusetext['usageType'] != None:
+            print("Domain: =>\t{}".format((self.text['domain'])))
+        if self.text['usageType'] != None:
             print("".ljust(28), end=' ')                        
-            print("IP usage_type: =>\t{}".format((abusetext['usageType'])))
-        if abusetext['countryName'] != None:
+            print("IP usage_type: =>\t{}".format((self.text['usageType'])))
+        if self.text['countryName'] != None:
             print("".ljust(28), end=' ')                        
-            print("Country Name: =>\t{}".format((abusetext['countryName'])))        
+            print("Country Name: =>\t{}".format((self.text['countryName'])))        
             
     
-    def gnoiseIPcheck(gnoisetext):
+    def gnoiseIPcheck(self):
         print(mycolors.foreground.lightblue,mycolors.background.lightgrey)
         print("\nGREY_NOISE SUMMARY")
         print("-"*25,"\n")   
@@ -532,22 +557,22 @@ class IPs:
         
 
         try:
-            print(mycolors.foreground.orange + "\nResults found: {}".format((gnoisetext['returned_count'])))
+            print(mycolors.foreground.orange + "\nResults found: {}".format((self.text['returned_count'])))
             print("-"*28)
             print(mycolors.reset)        
             print(mycolors.foreground.lightgrey)            
-            for i in range(len(gnoisetext['records'])):
-                if gnoisetext['records'][i]['name'] != None:
-                    print("\nRecord:\t=>\t{}".format((gnoisetext['records'][i]['name'])))
-                if gnoisetext['records'][i]['metadata'] != None:
+            for i in range(len(self.text['records'])):
+                if self.text['records'][i]['name'] != None:
+                    print("\nRecord:\t=>\t{}".format((self.text['records'][i]['name'])))
+                if self.text['records'][i]['metadata'] != None:
                     print("".ljust(20), end=' ')                                            
-                    print("Tor:\t=>\t{}".format((gnoisetext['records'][i]['metadata']['tor'])))                
-                if gnoisetext['records'][i]['confidence'] != None:
+                    print("Tor:\t=>\t{}".format((self.text['records'][i]['metadata']['tor'])))                
+                if self.text['records'][i]['confidence'] != None:
                     print("".ljust(20), end=' ')                                            
-                    print("Confidence:\t=>\t{}".format((gnoisetext['records'][i]['confidence'])))     
-                if gnoisetext['records'][i]['last_updated'] != None:
+                    print("Confidence:\t=>\t{}".format((self.text['records'][i]['confidence'])))     
+                if self.text['records'][i]['last_updated'] != None:
                     print("".ljust(20), end=' ')                                            
-                    print("Last_updated:\t=>\t{}".format((gnoisetext['records'][i]['last_updated'])))                 
+                    print("Last_updated:\t=>\t{}".format((self.text['records'][i]['last_updated'])))                 
         
         except ValueError:
             print((mycolors.foreground.red + "Error while connecting to GreyNoise!\n"))
@@ -558,7 +583,7 @@ class IPs:
         
     
     
-    def censysIPcheck(censystext):
+    def censysIPcheck(self):
         print(mycolors.reset)
         print("".ljust(20), end=' ')                        
         print("\n\nIP ADDRESS SUMMARY REPORT")
@@ -570,17 +595,17 @@ class IPs:
         print(mycolors.reset)        
         
 
-        for i in censystext['protocols']:
+        for i in self.text['protocols']:
             print(mycolors.foreground.yellow)
             print("Services running: ")            
             print("".ljust(28), end=' ')
             print(i)
             
-        print("\nLast updated: {}".format((censystext['updated_at'])))
+        print("\nLast updated: {}".format((self.text['updated_at'])))
         print("-"*40,"\n") 
         
     
-    def vtIPcheck(vttext,value):
+    def vtIPcheck(self):
         bkg = 1
         try:
             print(mycolors.reset)
@@ -591,13 +616,13 @@ class IPs:
             
 
     
-            if 'resolutions' in vttext:
+            if 'resolutions' in self.text:
                 print(mycolors.foreground.yellow + "\nResolutions")
                 print("-" * 11)
                 print(mycolors.reset)                
                 num = 0
-                if (vttext['resolutions']):
-                    for i in vttext['resolutions']:
+                if (self.text['resolutions']):
+                    for i in self.text['resolutions']:
                         if num >= 6:
                             print(mycolors.foreground.lightgreen + "\n......" + mycolors.reset)
                             print(mycolors.foreground.green + f"\nToo many resolutions... Check the website at https://www.virustotal.com/gui/ip-address/{value}/relations *** " + mycolors.reset)
@@ -612,14 +637,14 @@ class IPs:
     
 
     
-            if 'detected_urls' in vttext:
+            if 'detected_urls' in self.text:
                 print(mycolors.reset + "\nDetected URLs")
                 print("-" * 13)                
                 num = 0
-                for j in vttext['detected_urls']:
+                for j in self.text['detected_urls']:
                     if num >= 6:
                         print(mycolors.foreground.lightred + "\n......" + mycolors.reset)
-                        print(mycolors.foreground.green + f"\n *** Too many Detected URLs... Check the website at https://www.virustotal.com/gui/ip-address/{value}/relations *** " + mycolors.reset)
+                        print(mycolors.foreground.green + f"\n *** Too many Detected URLs... Check the website at https://www.virustotal.com/gui/ip-address/{self.value}/relations *** " + mycolors.reset)
                         break                
                     elif (bkg == 0):
                         print(mycolors.foreground.cyan + "\nURL:\t\t{}".format(j['url']) + mycolors.reset)
@@ -635,14 +660,14 @@ class IPs:
     
 
     
-            if 'detected_downloaded_samples' in vttext:
+            if 'detected_downloaded_samples' in self.text:
                 print(mycolors.reset + "\nDetected Downloaded Samples")
                 print("-" * 27)                
                 num = 0
-                for k in vttext['detected_downloaded_samples']:
+                for k in self.text['detected_downloaded_samples']:
                     if num >= 6:
                         print(mycolors.foreground.yellow + "\n......" + mycolors.reset)
-                        print(mycolors.foreground.green + f"\n *** Too many Detected Downloaded Samples... Check the website at https://www.virustotal.com/gui/ip-address/{value}/relations *** " + mycolors.reset)
+                        print(mycolors.foreground.green + f"\n *** Too many Detected Downloaded Samples... Check the website at https://www.virustotal.com/gui/ip-address/{self.value}/relations *** " + mycolors.reset)
                         break                
                     elif (bkg == 0):
                         print(mycolors.foreground.red + "\nSHA256:\t\t{}".format( k['sha256']) + mycolors.reset)
@@ -664,29 +689,29 @@ class IPs:
                 print((mycolors.foreground.red + "Error while connecting to Virus Total!\n"))
                 print(mycolors.reset)
     
-    def haIPcheck(hatext):
+    def haIPcheck(self):
         try:
             print(mycolors.foreground.lightred,mycolors.background.lightgrey)
             print("\nHYBRIDANALYSIS SUMMARY")
             print("-"*25,"\n") 
             print(mycolors.reset)     
             
-            print(mycolors.foreground.orange + "\nResults found: {}".format(hatext["count"]))
+            print(mycolors.foreground.orange + "\nResults found: {}".format(self.text["count"]))
             print("-"*28)
             print(mycolors.reset)
             try:
-                for i in range(len(hatext['result'])): 
-                    if hatext['result'][i]['verdict'] != None:
-                        print(mycolors.foreground.orange, "Verdict    => " + hatext['result'][i]['verdict'])
+                for i in range(len(self.text['result'])): 
+                    if self.text['result'][i]['verdict'] != None:
+                        print(mycolors.foreground.orange, "Verdict    => " + self.text['result'][i]['verdict'])
                     
-                    print(mycolors.foreground.orange, "SHA256     => " + hatext['result'][i]['sha256'])
-                    if hatext['result'][i]['av_detect'] != None:
-                        print(mycolors.foreground.orange, "AV Detect  => " + hatext['result'][i]['av_detect'])
-                    if hatext['result'][i]['vx_family'] != None:
-                        print(mycolors.foreground.orange, "Mal Family => " + hatext['result'][i]['vx_family'])
-                    print(mycolors.foreground.orange, "FileName   => " + hatext['result'][i]['submit_name'])
-                    if hatext['result'][i]['type_short'] != None:
-                        print(mycolors.foreground.orange, "FileType   => " + hatext['result'][i]['type_short'] + "\n")
+                    print(mycolors.foreground.orange, "SHA256     => " + self.text['result'][i]['sha256'])
+                    if self.text['result'][i]['av_detect'] != None:
+                        print(mycolors.foreground.orange, "AV Detect  => " + self.text['result'][i]['av_detect'])
+                    if self.text['result'][i]['vx_family'] != None:
+                        print(mycolors.foreground.orange, "Mal Family => " + self.text['result'][i]['vx_family'])
+                    print(mycolors.foreground.orange, "FileName   => " + self.text['result'][i]['submit_name'])
+                    if self.text['result'][i]['type_short'] != None:
+                        print(mycolors.foreground.orange, "FileType   => " + self.text['result'][i]['type_short'] + "\n")
             except KeyError as e:
                 pass     
             
@@ -701,7 +726,7 @@ class IPs:
             print(mycolors.reset)  
             
     
-    def otxIPcheck(otxtext):
+    def otxIPcheck(self):
         try:
             print(mycolors.foreground.lightblue + mycolors.background.lightgrey)
             print("\nOTXQuery SUMMARY")
@@ -710,26 +735,26 @@ class IPs:
             print(mycolors.foreground.lightcyan + "General Info: ".ljust(17))
             
             # Get General Info
-            if (bool(otxtext['pulses'])):
+            if (bool(self.text['pulses'])):
                 try:
                     print("-"*40)
                     num = 0
-                    for i in range(0, len(otxtext['pulses'])):
-                        if (otxtext['pulses'][i].get('name')):
+                    for i in range(0, len(self.text['pulses'])):
+                        if (self.text['pulses'][i].get('name')):
                             num +=1
                             print("".ljust(28), end=' ')
                             print(f"Data {mycolors.foreground.orange}{num}")
                             print("".ljust(28), end=' ')                            
-                            print(("Name: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['name'],mycolors.reset)))
-                        if (otxtext['pulses'][i].get('tags')):
+                            print(("Name: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['name'],mycolors.reset)))
+                        if (self.text['pulses'][i].get('tags')):
                             print("".ljust(28), end=' ')
-                            print((mycolors.foreground.orange + "Tags: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['tags'],mycolors.reset)))
-                        if (otxtext['pulses'][i].get('targeted_countries')):
+                            print((mycolors.foreground.orange + "Tags: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['tags'],mycolors.reset)))
+                        if (self.text['pulses'][i].get('targeted_countries')):
                             print("".ljust(28), end=' ')
-                            print((mycolors.foreground.orange + "Targeted Countries: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['targeted_countries'],mycolors.reset)))                                
-                        if (otxtext['pulses'][i].get('references')):
+                            print((mycolors.foreground.orange + "Targeted Countries: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['targeted_countries'],mycolors.reset)))                                
+                        if (self.text['pulses'][i].get('references')):
                             print("".ljust(28), end=' ')
-                            print(mycolors.foreground.orange + "References: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['references'],mycolors.reset), end=' ')
+                            print(mycolors.foreground.orange + "References: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['references'],mycolors.reset), end=' ')
                         print("\n")
                 except KeyError as e:
                     pass     
@@ -738,13 +763,13 @@ class IPs:
                 print("-"*20)
                 # Get OTX IP detected malware samples
                 print(mycolors.foreground.lightred + "\nDetected malware samples: ".ljust(17))                
-                if 'malware_samples' in otxtext:
-                    if (bool(otxtext['malware_samples'])):
+                if 'malware_samples' in self.text:
+                    if (bool(self.text['malware_samples'])):
                         try:
-                            for i in range(0, len(otxtext['malware_samples'])):
-                                if (otxtext['malware_samples'][i]):
+                            for i in range(0, len(self.text['malware_samples'])):
+                                if (self.text['malware_samples'][i]):
                                     print("".ljust(28), end=' ')
-                                    print(("{}".format( otxtext['malware_samples'][i])))                    
+                                    print(("{}".format( self.text['malware_samples'][i])))                    
                         except KeyError as e:
                             pass     
                     else:
@@ -755,13 +780,13 @@ class IPs:
                 print("-"*20)
                 # Get OTX IP detected URLs
                 print(mycolors.foreground.lightcyan + "\nDetected URLs: ".ljust(17))  
-                if 'url_list' in otxtext:
-                    if (bool(otxtext['url_list'])):
+                if 'url_list' in self.text:
+                    if (bool(self.text['url_list'])):
                         try:
-                            for i in range(0, len(otxtext['url_list'])):
-                                if (otxtext['url_list'][i]).get('url'):
+                            for i in range(0, len(self.text['url_list'])):
+                                if (self.text['url_list'][i]).get('url'):
                                     print("".ljust(28), end=' ')
-                                    print(("{}".format( otxtext['url_list'][i]['url'])))                    
+                                    print(("{}".format( self.text['url_list'][i]['url'])))                    
                         except KeyError as e:
                             pass    
                     else:
@@ -775,12 +800,16 @@ class IPs:
             print(mycolors.foreground.lightred + "\nNo results found for OTX_Query")    
             print(mycolors.reset)
     
-class Hashes:
-    def vthash(vttext): 
+class Hashes():
+    def __init__(self, text, value):
+        self.text = text
+        self.value = value
+        
+    def vthash(self): 
         bkg = 1
         try:
-            vttext = vttext["data"]
-            timestamp = vttext['attributes']['first_submission_date']
+            self.text = self.text["data"]
+            timestamp = self.text['attributes']['first_submission_date']
             dt_object = datetime.fromtimestamp(timestamp)        
         except KeyError:
             print(mycolors.foreground.lightred + "\nERROR: Try using VirusTotal_v3_Get_Observable instead!\n")
@@ -801,33 +830,33 @@ class Hashes:
             print("="*20,'n') 
             print(mycolors.reset)
 
-            if vttext['attributes']['tags']:
+            if self.text['attributes']['tags']:
                 print("Tags:")
                 try:
-                    for i in range(len(vttext['attributes']['tags'])):
+                    for i in range(len(self.text['attributes']['tags'])):
                         print("".ljust(28), end=' ') 
-                        print(mycolors.foreground.orange, vttext['attributes']['tags'][i],mycolors.reset)
+                        print(mycolors.foreground.orange, self.text['attributes']['tags'][i],mycolors.reset)
                 except KeyError as e:
                     pass
 
-            if vttext['attributes']['names']:
+            if self.text['attributes']['names']:
                 print("-"*40)                            
                 print("Name(s) of file:")                
                 try:
-                    for i in range(len(vttext['attributes']['names'])):
+                    for i in range(len(self.text['attributes']['names'])):
                         print("".ljust(28), end=' ') 
-                        print(mycolors.foreground.orange, vttext['attributes']['names'][i],mycolors.reset)
+                        print(mycolors.foreground.orange, self.text['attributes']['names'][i],mycolors.reset)
                 except KeyError as e:
                     pass
             
                     
             print("-"*40)  
             print("\n\n\n")
-            print(f"Detection {mycolors.foreground.lightred}{vttext['attributes']['last_analysis_stats']['malicious']}{mycolors.reset}/{mycolors.foreground.lightgreen}60")
+            print(f"Detection {mycolors.foreground.lightred}{self.text['attributes']['last_analysis_stats']['malicious']}{mycolors.reset}/{mycolors.foreground.lightgreen}60")
             print(mycolors.reset)
             
-            if vttext['attributes']['last_analysis_results']:
-                for x,y in vttext['attributes']['last_analysis_results'].items():
+            if self.text['attributes']['last_analysis_results']:
+                for x,y in self.text['attributes']['last_analysis_results'].items():
                     if y['result'] != None:
                         print(f"{mycolors.foreground.lightgreen}{x}:".ljust(20),"=>".ljust(10),f"{mycolors.foreground.lightred}{y['result']}{mycolors.reset}")
             
@@ -836,12 +865,12 @@ class Hashes:
             print(mycolors.foreground.orange + "\nContacted URLs and Domains")
             print("-"*26)
             print(mycolors.reset)
-            print(mycolors.foreground.red + "\nContacted URLs " + f"{vttext['relationships']['contacted_urls']['meta']['count']}")
-            if vttext['relationships']['contacted_urls']['data']:
+            print(mycolors.foreground.red + "\nContacted URLs " + f"{self.text['relationships']['contacted_urls']['meta']['count']}")
+            if self.text['relationships']['contacted_urls']['data']:
                 try:
-                    for i in range(len(vttext['relationships']['contacted_urls']['data'])):
+                    for i in range(len(self.text['relationships']['contacted_urls']['data'])):
                         print("".ljust(28), end=' ') 
-                        print(mycolors.foreground.orange, vttext['relationships']['contacted_urls']['data'][i]['context_attributes']['url'],mycolors.reset)
+                        print(mycolors.foreground.orange, self.text['relationships']['contacted_urls']['data'][i]['context_attributes']['url'],mycolors.reset)
                 except KeyError as e:
                     pass   
             else:
@@ -850,12 +879,12 @@ class Hashes:
             
             
             print("-"*40)
-            print(mycolors.foreground.red + "\nContacted Domains" + f" {vttext['relationships']['contacted_domains']['meta']['count']}")
-            if vttext['relationships']['contacted_domains']['data']:
+            print(mycolors.foreground.red + "\nContacted Domains" + f" {self.text['relationships']['contacted_domains']['meta']['count']}")
+            if self.text['relationships']['contacted_domains']['data']:
                 try:
-                    for i in range(len(vttext['relationships']['contacted_domains']['data'])):
+                    for i in range(len(self.text['relationships']['contacted_domains']['data'])):
                         print("".ljust(28), end=' ') 
-                        print(mycolors.foreground.orange, vttext['relationships']['contacted_domains']['data'][i]['id'])
+                        print(mycolors.foreground.orange, self.text['relationships']['contacted_domains']['data'][i]['id'])
                 except KeyError as e:
                     pass
             else:
@@ -870,45 +899,45 @@ class Hashes:
                 print((mycolors.foreground.red + "Error while connecting to Virus Total!\n"))
             print(mycolors.reset)
         
-    def hahash(hatext):
+    def hahash(self):
         print(mycolors.foreground.lightred + mycolors.background.lightgrey)
         print("\n\nHYBRIDANALYSIS SUMMARY")
         print("="*24,'n') 
         print(mycolors.reset)            
         try:
             x = 0
-            for i in range(len(hatext)): 
+            for i in range(len(self.text)): 
                 x +=1
                 print("".ljust(28), end=' ') 
                 print(f"{mycolors.foreground.lightred}Detection {x}")
                 print("".ljust(28), end=' ') 
                 print("-"*20,mycolors.reset) 
                 
-                print("FileName   => " + mycolors.foreground.orange +hatext[i]['submit_name'] + mycolors.reset)
+                print("FileName   => " + mycolors.foreground.orange +self.text[i]['submit_name'] + mycolors.reset)
                 
-                if hatext[i]['verdict'] != None:
-                    print("Verdict    => " + mycolors.foreground.orange + hatext[i]['verdict'] + mycolors.reset)
+                if self.text[i]['verdict'] != None:
+                    print("Verdict    => " + mycolors.foreground.orange + self.text[i]['verdict'] + mycolors.reset)
                 
-                if hatext[i]['submissions'] != None:
-                    print("Number of submissions    => ", mycolors.foreground.orange, len(hatext[i]['submissions']), mycolors.reset)
+                if self.text[i]['submissions'] != None:
+                    print("Number of submissions    => ", mycolors.foreground.orange, len(self.text[i]['submissions']), mycolors.reset)
                     
-                if hatext[i]['type_short'] != None:
-                    print("FileType   => " + mycolors.foreground.orange + f"{hatext[i]['type_short']}" + mycolors.reset)  
+                if self.text[i]['type_short'] != None:
+                    print("FileType   => " + mycolors.foreground.orange + f"{self.text[i]['type_short']}" + mycolors.reset)  
                 
-                if hatext[i]['av_detect'] != None:
-                    print("AV Detect  => "+ mycolors.foreground.orange, hatext[i]['av_detect'], mycolors.reset)
+                if self.text[i]['av_detect'] != None:
+                    print("AV Detect  => "+ mycolors.foreground.orange, self.text[i]['av_detect'], mycolors.reset)
                     
-                if hatext[i]['vx_family'] != None:
-                    print("Mal Family => " + mycolors.foreground.orange + hatext[i]['vx_family'] + mycolors.reset)
+                if self.text[i]['vx_family'] != None:
+                    print("Mal Family => " + mycolors.foreground.orange + self.text[i]['vx_family'] + mycolors.reset)
                 
-                if hatext[i]['environment_description'] != None:
-                    print("Analysis environment => " + mycolors.foreground.orange + hatext[i]['environment_description'] + "\n")
+                if self.text[i]['environment_description'] != None:
+                    print("Analysis environment => " + mycolors.foreground.orange + self.text[i]['environment_description'] + "\n")
                     
     
         except KeyError as e:
             pass         
         
-    def otxhash(otxtext):
+    def otxhash(self):
         try:
             print(mycolors.foreground.lightblue + mycolors.background.lightgrey)
             print("\nOTXQuery SUMMARY")
@@ -917,37 +946,37 @@ class Hashes:
             print(mycolors.foreground.lightcyan + "General Info: ".ljust(17),mycolors.reset)
             
             # Get General Info
-            if (bool(otxtext['pulses'])):
+            if (bool(self.text['pulses'])):
                 try:
                     print("-"*40)
                     num = 0
-                    for i in range(0, len(otxtext['pulses'])):
-                        if (otxtext['pulses'][i].get('name')):
+                    for i in range(0, len(self.text['pulses'])):
+                        if (self.text['pulses'][i].get('name')):
                             num +=1
                             print("".ljust(28), end=' ')
                             print(f"Data {mycolors.foreground.orange}{num}")
                             print("".ljust(28), end=' ')                            
-                            print(("Name: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['name'],mycolors.reset)))
-                        if (otxtext['pulses'][i].get('tags')):
+                            print(("Name: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['name'],mycolors.reset)))
+                        if (self.text['pulses'][i].get('tags')):
                             print("".ljust(28), end=' ')
-                            print((mycolors.foreground.orange + "Tags: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['tags'],mycolors.reset)))
-                        if (otxtext['pulses'][i].get('targeted_countries')):
+                            print((mycolors.foreground.orange + "Tags: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['tags'],mycolors.reset)))
+                        if (self.text['pulses'][i].get('targeted_countries')):
                             print("".ljust(28), end=' ')
-                            print((mycolors.foreground.orange + "Targeted Countries: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['targeted_countries'],mycolors.reset)))                                
-                        if (otxtext['pulses'][i].get('references')):
+                            print((mycolors.foreground.orange + "Targeted Countries: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['targeted_countries'],mycolors.reset)))                                
+                        if (self.text['pulses'][i].get('references')):
                             print("".ljust(28), end=' ')
-                            print(mycolors.foreground.orange + "References: {0}{1}{2}".format(mycolors.foreground.lightred,otxtext['pulses'][i]['references'],mycolors.reset), end=' ')
+                            print(mycolors.foreground.orange + "References: {0}{1}{2}".format(mycolors.foreground.lightred,self.text['pulses'][i]['references'],mycolors.reset), end=' ')
                         print("\n")
                 except KeyError as e:
                     pass             
             
             #Get yara rule_name(s)
-            if otxtext['analysis']['plugins']['yarad']['results']['detection']:
+            if self.text['analysis']['plugins']['yarad']['results']['detection']:
                 try:
                     print("Yara rule_name(s) Triggered:")
-                    for i in range(len(otxtext['analysis']['plugins'])):
+                    for i in range(len(self.text['analysis']['plugins'])):
                         print("".ljust(28), end=' ') 
-                        print(mycolors.foreground.orange, otxtext['analysis']['plugins']['yarad']['results']['detection'][i]['rule_name'],mycolors.reset)
+                        print(mycolors.foreground.orange, self.text['analysis']['plugins']['yarad']['results']['detection'][i]['rule_name'],mycolors.reset)
                 except IndexError:
                     pass
                 
@@ -955,14 +984,14 @@ class Hashes:
             
             print("-"*40)
             print("\nDetections:\n")
-            for x,y in otxtext['analysis']['plugins'].items():
+            for x,y in self.text['analysis']['plugins'].items():
                 if 'clamav' in x:
                     print(f"{mycolors.foreground.lightgreen}{x}:".ljust(20),"=>".ljust(10),f"{mycolors.foreground.lightred}{y['results'].get('detection')}{mycolors.reset}")
                 elif 'msdefender' in x:
                     print(f"{mycolors.foreground.lightgreen}{x}:".ljust(20),"=>".ljust(10),f"{mycolors.foreground.lightred}{y['results'].get('detection')}{mycolors.reset}")
 
                      
-            for x,y in otxtext['analysis']['plugins'].items():    
+            for x,y in self.text['analysis']['plugins'].items():    
                 if 'strings' in x:
                     res = input("\nWould you like to see the strings? (y | n): ")
                     with open("strings.txt",'w+') as f:
@@ -980,13 +1009,13 @@ class Hashes:
             print("-"*40)
             # Get OTX domain detected malware samples
             print(mycolors.foreground.lightred + "\nDetected malware samples: ".ljust(17))                
-            if 'malware_samples' in otxtext:
-                if (bool(otxtext['malware_samples'])):
+            if 'malware_samples' in self.text:
+                if (bool(self.text['malware_samples'])):
                     try:
-                        for i in range(0, len(otxtext['malware_samples'])):
-                            if (otxtext['malware_samples'][i]):
+                        for i in range(0, len(self.text['malware_samples'])):
+                            if (self.text['malware_samples'][i]):
                                 print("".ljust(28), end=' ')
-                                print((f"{otxtext['malware_samples'][i]}"))                    
+                                print((f"{self.text['malware_samples'][i]}"))                    
                     except KeyError as e:
                         pass   
                 else:
@@ -997,13 +1026,13 @@ class Hashes:
             print("-"*20)
             # Get OTX domain detected URLs
             print(mycolors.foreground.lightcyan + "\nDetected URLs: ".ljust(17))  
-            if 'url_list' in otxtext:
-                if (bool(otxtext['url_list'])):
+            if 'url_list' in self.text:
+                if (bool(self.text['url_list'])):
                     try:
-                        for i in range(0, len(otxtext['url_list'])):
-                            if (otxtext['url_list'][i]).get('url'):
+                        for i in range(0, len(self.text['url_list'])):
+                            if (self.text['url_list'][i]).get('url'):
                                 print("".ljust(28), end=' ')
-                                print(f"{otxtext['url_list'][i]['url']}")                    
+                                print(f"{self.text['url_list'][i]['url']}")                    
                     except KeyError as e:
                         pass  
                 else:
