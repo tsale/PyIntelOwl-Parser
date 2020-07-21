@@ -1,4 +1,3 @@
-from colorama import init, Fore, Back, Style
 import geocoder
 from datetime import datetime
 import os
@@ -606,7 +605,7 @@ class IPs():
         
     
     def vtIPcheck(self):
-        bkg = 1
+        
         try:
             print(mycolors.reset)
             print("".ljust(20), end=' ')                        
@@ -625,15 +624,13 @@ class IPs():
                     for i in self.text['resolutions']:
                         if num >= 6:
                             print(mycolors.foreground.lightgreen + "\n......" + mycolors.reset)
-                            print(mycolors.foreground.green + f"\nToo many resolutions... Check the website at https://www.virustotal.com/gui/ip-address/{value}/relations *** " + mycolors.reset)
+                            print(mycolors.foreground.green + f"\nToo many resolutions... Check the website at https://www.virustotal.com/gui/ip-address/{self.value}/relations *** " + mycolors.reset)
                             break                    
-                        elif (bkg == 1):
+                        else:
                             print(mycolors.foreground.lightgreen + "\nLast Resolved:\t" + i['last_resolved'] + mycolors.reset)
                             print(mycolors.foreground.lightgreen + "Hostname:\t" + i['hostname'] + mycolors.reset)
                             num +=1
-                        else:
-                            print(mycolors.foreground.green + "\nLast Resolved:\t" + i['last_resolved'] + mycolors.reset)
-                            print(mycolors.foreground.green + "Hostname:\t" + i['hostname'] + mycolors.reset)
+  
     
 
     
@@ -646,11 +643,6 @@ class IPs():
                         print(mycolors.foreground.lightred + "\n......" + mycolors.reset)
                         print(mycolors.foreground.green + f"\n *** Too many Detected URLs... Check the website at https://www.virustotal.com/gui/ip-address/{self.value}/relations *** " + mycolors.reset)
                         break                
-                    elif (bkg == 0):
-                        print(mycolors.foreground.cyan + "\nURL:\t\t{}".format(j['url']) + mycolors.reset)
-                        print(mycolors.foreground.cyan + "Scan Date:\t{}".format(j['scan_date'])+ mycolors.reset)
-                        print(mycolors.foreground.cyan + "Positives:\t{}".format(j['positives'])+ mycolors.reset)
-                        print(mycolors.foreground.cyan + "Total:\t\t{}".format(j['total'])+ mycolors.reset)
                     else:
                         print(mycolors.foreground.lightred + "\nURL:\t\t{}".format(j['url']) + mycolors.reset)
                         print(mycolors.foreground.lightred + "Scan date:\t{}".format(j['scan_date']), mycolors.reset)
@@ -669,11 +661,6 @@ class IPs():
                         print(mycolors.foreground.yellow + "\n......" + mycolors.reset)
                         print(mycolors.foreground.green + f"\n *** Too many Detected Downloaded Samples... Check the website at https://www.virustotal.com/gui/ip-address/{self.value}/relations *** " + mycolors.reset)
                         break                
-                    elif (bkg == 0):
-                        print(mycolors.foreground.red + "\nSHA256:\t\t{}".format( k['sha256']) + mycolors.reset)
-                        print(mycolors.foreground.red + "Date:\t\t{}".format( k['date']) + mycolors.reset)
-                        print(mycolors.foreground.red + "Positives:\t%d".format( k['positives']) + mycolors.reset)
-                        print(mycolors.foreground.red + "Total:\t\t%d".format( k['total']) + mycolors.reset)
                     else:
                         print(mycolors.foreground.yellow + "\nSHA256:\t\t{}".format( k['sha256']) + mycolors.reset)
                         print(mycolors.foreground.yellow + "Date:\t\t{}".format( k['date']) + mycolors.reset)
@@ -683,11 +670,9 @@ class IPs():
     
     
         except ValueError:
-            if(bkg == 1):
-                print((mycolors.foreground.lightred + "Error while connecting to Virus Total!\n"))
-            else:
-                print((mycolors.foreground.red + "Error while connecting to Virus Total!\n"))
-                print(mycolors.reset)
+            print((mycolors.foreground.lightred + "Error while connecting to Virus Total!\n"))
+            print(mycolors.reset)
+
     
     def haIPcheck(self):
         try:
@@ -806,7 +791,7 @@ class Hashes():
         self.value = value
         
     def vthash(self): 
-        bkg = 1
+        
         try:
             self.text = self.text["data"]
             timestamp = self.text['attributes']['first_submission_date']
@@ -816,12 +801,9 @@ class Hashes():
         
         
             
-        try:
-            if (bkg == 0):
-                print(mycolors.foreground.cyan + "\nFirst Submission Date: ".ljust(13), dt_object + "\n")
-            else:
-                print(mycolors.foreground.yellow + "\nScan date: ".ljust(13), dt_object)
-                print(mycolors.reset)
+
+            print(mycolors.foreground.yellow + "\nScan date: ".ljust(13), dt_object)
+            print(mycolors.reset)
             
             
             print(mycolors.foreground.lightblue + mycolors.background.lightgrey)            
@@ -893,11 +875,9 @@ class Hashes():
                 
                 
         except ValueError:
-            if(bkg == 1):
-                print((mycolors.foreground.lightred + "Error while connecting to Virus Total!\n"))
-            else:
-                print((mycolors.foreground.red + "Error while connecting to Virus Total!\n"))
+            print(mycolors.foreground.lightred + "Error while connecting to Virus Total!\n")
             print(mycolors.reset)
+            
         
     def hahash(self):
         print(mycolors.foreground.lightred + mycolors.background.lightgrey)
