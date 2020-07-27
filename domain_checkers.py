@@ -236,7 +236,7 @@ class Hybrid:
                                 print("\t\t====>".ljust(28), end=' ')
                                 print("Scan date:\t{}".format(j['scan_date']), )
                                 print("\t\t====>".ljust(28), end=' ')
-                                print("Detection:\t{0}{1}/{2}{3}{4}".format(
+                                print("Detection:\t{0}{1}/{2}{3}{4}\n".format(
                         MyColors.Foreground.lightred, j['positives'],
                     MyColors.reset, MyColors.Foreground.lightgreen, j['total']), colour)
                         else:
@@ -246,7 +246,7 @@ class Hybrid:
                                         print("\t\t====>".ljust(28), end=' ')
                                         print("Scan date:\t{}".format(j['scan_date']), )
                                         print("\t\t====>".ljust(28), end=' ')
-                                        print("Detection:\t{0}{1}/{2}{3}{4}".format(
+                                        print("Detection:\t{0}{1}/{2}{3}{4}\n".format(
                             MyColors.Foreground.lightred, j['positives'],
                         MyColors.reset, MyColors.Foreground.lightgreen, j['total']), colour)
                                         print(colour)
@@ -742,7 +742,7 @@ class Hashes:
 
                 print("-" * 120)
                 ct_domains = self.text['relationships']['contacted_domains']['meta']['count']
-                print(MyColors.Foreground.red + "\nContacted Hybrid: {}".format(ct_domains))
+                print(MyColors.Foreground.red + "\nContacted Domains: {}".format(ct_domains))
                 print("_" * 25 + "\n")
                 if self.text['relationships']['contacted_domains']['data']:
                         data = self.text['relationships']['contacted_domains']['data']
