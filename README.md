@@ -1,5 +1,7 @@
 <!-- #######  THIS IS A COMMENT - Visible only in the source editor #########-->
 # PyIntelOwl-Parser
+<p><strong><em>** PyIntelOwl-Parser is now integrated with the main CLI of the IntelOwl Project. Just add --sc when you run the main PyIntelOwl CLI to show colours (<a href="https://github.com/intelowlproject/pyintelowl/releases/tag/1.1.0">https://github.com/intelowlproject/pyintelowl/releases/tag/1.1.0</a>) **</em></strong></p>
+
 <p>All credits to the amazing platform - <a href="https://github.com/intelowlproject/IntelOwl">IntelOwl</a>, created by&nbsp;Matteo Lodi (<a href="https://twitter.com/matte_lodi" rel="nofollow">Twitter</a>). This repo is made to make the results from the CLI tool, PyIntelOwl, easier to analyze.&nbsp;</p>
 <p><span data-preserver-spaces="true">IntelOwl is what I was looking for as an Intel analyst to check indicators across multiple sources at the same quickly.</span></p>
 <p><span data-preserver-spaces="true">Intelowl can be configured to reach out to VirusTotal, Hybrid Analysis etc. and return a JSON file as a result. Intelowl effectively provides an API to rule them all. All this "plugin" parser does, is to parse the JSON file colourfully returned by Intelowl, which is easier to read.&nbsp;</span></p>
